@@ -43,11 +43,11 @@ class JiraAPI:
         # Pour Jira Cloud, utiliser issuetype = Epic
         jql = f'project = "{project_key}" AND issuetype = Epic ORDER BY created DESC'
         
-        response = requests.get(
-            f'{self.url}/rest/api/3/search',
+        response = requests.post(
+            f'{self.url}/rest/api/3/search/jql',
             headers=self.headers,
-            params={
-                'jql': jql,
+            json={
+                'query': jql,
                 'maxResults': 100,
                 'expand': 'changelog'
             }
@@ -73,11 +73,11 @@ class JiraAPI:
         # Pour Jira Cloud, utiliser "Epic Link" = epic_key
         jql = f'"Epic Link" = {epic_key} AND issuetype = Story ORDER BY created DESC'
         
-        response = requests.get(
-            f'{self.url}/rest/api/3/search',
+        response = requests.post(
+            f'{self.url}/rest/api/3/search/jql',
             headers=self.headers,
-            params={
-                'jql': jql,
+            json={
+                'query': jql,
                 'maxResults': 100,
                 'expand': 'changelog'
             }
