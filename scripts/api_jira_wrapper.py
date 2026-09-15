@@ -40,17 +40,22 @@ class JiraAPI:
     
     def search_epics(self, project_key: str) -> List[Dict]:
         """Récupérer les Epics d'un projet"""
-        jql = f'project = {project_key} AND type = Epic'
+        # Pour Jira Cloud, utiliser issuetype = Epic
+        jql = f'project = "{project_key}" AND issuetype = Epic ORDER BY created DESC'
         
         response = requests.get(
             f'{self.url}/rest/api/3/search',
             headers=self.headers,
-            params={'jql': jql, 'maxResults': 100}
+            params={
+                'jql': jql,
+                'maxResults': 100,
+                'expand': 'changelog'
+            }
         )
         
         if response.status_code != 200:
             print(f"❌ Erreur Jira: {response.status_code}")
-            print(response.text)
+            print(f"📌 Message: {response.text}")
             return []
         
         issues = response.json().get('issues', [])
@@ -65,16 +70,22 @@ class JiraAPI:
     
     def search_stories_in_epic(self, epic_key: str) -> List[Dict]:
         """Récupérer les User Stories d'un Epic"""
-        jql = f'parent = {epic_key} AND type = Story'
+        # Pour Jira Cloud, utiliser "Epic Link" = epic_key
+        jql = f'"Epic Link" = {epic_key} AND issuetype = Story ORDER BY created DESC'
         
         response = requests.get(
             f'{self.url}/rest/api/3/search',
             headers=self.headers,
-            params={'jql': jql, 'maxResults': 100}
+            params={
+                'jql': jql,
+                'maxResults': 100,
+                'expand': 'changelog'
+            }
         )
         
         if response.status_code != 200:
             print(f"❌ Erreur Jira: {response.status_code}")
+            print(f"📌 Message: {response.text}")
             return []
         
         issues = response.json().get('issues', [])
