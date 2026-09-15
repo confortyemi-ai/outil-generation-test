@@ -1,0 +1,15 @@
+{
+  "project": {
+    "name": "Regulatory Agent Compliance",
+    "environment": "web",
+    "methodology": "agile",
+    "language": "fr",
+    "testLevels": ["system", "acceptance"]
+  },
+  "deliverable": "plan-test",
+  "testPlan": {
+    "scope": "Regulatory Agent compliance testing",
+    "standards": ["IEEE 829", "ISO/IEC 29119"],
+    "risks": ["Non-conformité légale", "Data integrity"]
+  }
+}

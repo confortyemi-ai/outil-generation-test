@@ -1,0 +1,21 @@
+{
+  "project": {
+    "name": "COMMIA - Système de calcul de commissions",
+    "environment": "web",
+    "methodology": "agile",
+    "language": "fr",
+    "testLevels": ["unit", "integration", "system"]
+  },
+  "deliverable": "cas-test",
+  "testCases": {
+    "functionName": "Calcul des commissions",
+    "userStory": "COMMIA-042",
+    "includeCases": {
+      "nominal": true,
+      "boundary": true,
+      "error": true
+    },
+    "testTypes": ["fonctionnel", "régression"],
+    "priority": "Critique"
+  }
+}

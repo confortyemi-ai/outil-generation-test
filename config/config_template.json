@@ -1,0 +1,21 @@
+{
+  "project": {
+    "name": "My Test Project",
+    "environment": "web",
+    "methodology": "agile",
+    "language": "fr",
+    "testLevels": ["system", "acceptance"]
+  },
+  "deliverable": "cas-test",
+  "testCases": {
+    "functionName": "User Authentication",
+    "userStory": "US-001",
+    "includeCases": {
+      "nominal": true,
+      "boundary": true,
+      "error": true
+    },
+    "testTypes": ["fonctionnel", "régression"],
+    "priority": "Critique"
+  }
+}

@@ -1,0 +1,82 @@
+name: Generate Master Test Report
+
+on:
+  push:
+    paths:
+      - 'config*.json'
+      - '**/config.json'
+      - '.github/workflows/generate-test-report.yml'
+  pull_request:
+    paths:
+      - 'config*.json'
+      - '**/config.json'
+  workflow_dispatch:
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Find config files
+        id: find-configs
+        run: |
+          configs=$(find . -name 'config*.json' -type f | grep -v node_modules | head -20)
+          
+          if [ -z "$configs" ]; then
+            echo "❌ No config files found"
+            exit 1
+          else
+            echo "✅ Found config files:"
+            echo "$configs"
+          fi
+      
+      - name: Generate Master Reports
+        run: |
+          mkdir -p reports
+          configs=$(find . -name 'config*.json' -type f | grep -v node_modules)
+          
+          for config in $configs; do
+            echo "📋 Processing: $config"
+            python scripts/gen_master_report.py "$config" -o "reports/$(basename ${config%.json})_master_report_$(date +%Y%m%d_%H%M%S).xlsx"
+            
+            if [ $? -eq 0 ]; then
+              echo "✅ Report generated"
+            else
+              echo "❌ Failed for $config"
+              exit 1
+            fi
+          done
+          
+          ls -lh reports/
+      
+      - name: Upload Reports as Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-reports
+          path: reports/*.xlsx
+          retention-days: 90
+      
+      - name: Comment PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `✅ **Test Reports Generated**\n\n📊 Reports available in Artifacts section.\n\n[📥 Download](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`
+            })
